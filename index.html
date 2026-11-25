@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#064e3b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BAMS Tracker" />
+  <title>AIIA Goa — III Prof BAMS Attendance Tracker</title>
+
+  <!-- Embedded SVG App Icon for Apple Touch & Manifest -->
+  <link id="apple-icon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23064e3b'/%3E%3Cpath d='M256 112c-79.5 0-144 64.5-144 144s64.5 144 144 144 144-64.5 144-144-64.5-144-144-144zm64 164h-44v44c0 11-9 20-20 20s-20-9-20-20v-44h-44c-11 0-20-9-20-20s9-20 20-20h44v-44c0-11 9-20 20-20s20 9 20 20v44h44c11 0 20 9 20 20s-9 20-20 20z' fill='%2334d399'/%3E%3C/svg%3E" />
+
+  <!-- Dynamic Self-Contained Web App Manifest -->
+  <script>
+    (function() {
+      const iconSvg = "data:image/svg+xml," + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <rect width="512" height="512" rx="112" fill="#064e3b"/>
+          <circle cx="256" cy="256" r="168" fill="none" stroke="#10b981" stroke-width="20"/>
+          <path d="M236 168h40v68h68v40h-68v68h-40v-68h-68v-40h68z" fill="#ecfdf5"/>
+        </svg>`
+      );
+
+      const manifest = {
+        name: "AIIA Goa — III Prof BAMS Attendance",
+        short_name: "BAMS Tracker",
+        description: "First Term Attendance & Clinical Posting Tracker (w.e.f. 23 Nov 2026)",
+        start_url: window.location.pathname || "/",
+        scope: "/",
+        display: "standalone",
+        orientation: "portrait",
+        background_color: "#064e3b",
+        theme_color: "#064e3b",
+        icons: [
+          {
+            src: iconSvg,
+            sizes: "192x192",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+          },
+          {
+            src: iconSvg,
+            sizes: "512x512",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+          }
+        ]
+      };
+
+      const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+      const manifestURL = URL.createObjectURL(blob);
+      const link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = manifestURL;
+      document.head.appendChild(link);
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary: #064e3b;
+      --primary-light: #065f46;
+      --accent: #10b981;
+      --accent-soft: #d1fae5;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --neutral-soft: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding-bottom: 84px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #022c22 100%);
+      color: #fff;
+      padding: 18px 16px 20px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 14px rgba(6, 78, 59, 0.25);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .title-group h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .batch-pill {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-top: 3px;
+      letter-spacing: 0.4px;
+    }
+
+    .subtitle {
+      font-size: 11.5px;
+      color: #a7f3d0;
+      margin-top: 4px;
+    }
+
+    .batch-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .batch-bar label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #ecfdf5;
+    }
+
+    .batch-bar select {
+      background: #022c22;
+      color: #fff;
+      border: 1px solid rgba(110, 231, 183, 0.4);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 14px 14px 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+    }
+
+    .stat-main {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 4px 0 8px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--text);
+    }
+
+    .status-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .badge-good { background: var(--accent-soft); color: #065f46; }
+    .badge-warn { background: var(--warning-soft); color: #92400e; }
+    .badge-bad  { background: var(--danger-soft); color: #991b1b; }
+
+    .stat-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .month-select {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .filter-tabs {
+      display: flex;
+      background: #e5e7eb;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .filter-tab {
+      flex: 1;
+      text-align: center;
+      padding: 7px 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-tab.active {
+      background: var(--card);
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .margin-banner {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .margin-banner.danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .nav-views {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .view-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .view-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .date-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .date-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .date-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .date-center input[type="date"] {
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      background: transparent;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .day-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .bulk-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .bulk-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .bulk-btn.present-all {
+      background: var(--accent-soft);
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .class-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .class-item {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .class-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .time-chip {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      background: #ecfdf5;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .type-chip {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .type-theory { background: #eff6ff; color: #1d4ed8; }
+    .type-clinical { background: #fef3c7; color: #b45309; }
+    .type-other { background: #f3f4f6; color: #4b5563; }
+
+    .subject-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .faculty-name {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .alt-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .status-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .status-btn {
+      padding: 8px 4px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .status-btn.active-present {
+      background: #059669;
+      color: #fff;
+      border-color: #059669;
+    }
+
+    .status-btn.active-absent {
+      background: #dc2626;
+      color: #fff;
+      border-color: #dc2626;
+    }
+
+    .status-btn.active-off {
+      background: #4b5563;
+      color: #fff;
+      border-color: #4b5563;
+    }
+
+    .subject-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .sub-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .sub-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sub-pct {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .progress-bg {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .sub-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .backup-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      margin-top: 14px;
+    }
+
+    .backup-card h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden { display: none !important; }
+
+    .sunday-box {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 32px 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo-badge">🩺</div>
+    <div class="title-group">
+      <h1>AIIA Goa — III Prof BAMS</h1>
+      <span class="batch-pill">BATCH 2023–24</span>
+      <div class="subtitle">First Term Attendance &amp; Clinical Posting Tracker (w.e.f. 23 Nov 2026)</div>
+    </div>
+  </div>
+
+  <div class="batch-bar">
+    <label for="batchSelect">👥 Clinical Batch:</label>
+    <select id="batchSelect">
+      <option value="A">Batch A (Roll 1–16)</option>
+      <option value="B">Batch B (Roll 17–32)</option>
+      <option value="C">Batch C (Roll 33–48)</option>
+      <option value="D">Batch D (Roll 49–64)</option>
+      <option value="E">Batch E (Roll 65–80)</option>
+      <option value="F">Batch F (Roll 81–96)</option>
+    </select>
+  </div>
+</header>
+
+<div class="container">
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all">All Classes</button>
+    <button class="filter-tab" data-filter="theory">Theory Only</button>
+    <button class="filter-tab" data-filter="clinical">Clinical Only</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Overall Attendance</span>
+        <span>🏅</span>
+      </div>
+      <div class="stat-main">
+        <span class="stat-value" id="overallPct">0.0%</span>
+        <span class="status-badge badge-good" id="overallBadge">No Data</span>
+      </div>
+      <div class="stat-footer">
+        <span id="overallCount">0 / 0 sessions attended</span>
+        <span>Target: 75%</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Monthly Attendance</span>
+        <select class="month-select" id="monthFilter"></select>
+      </div>
+      <div class="stat-main">
+        <span class="stat-value" id="monthlyPct">0.0%</span>
+        <span class="status-badge badge-good" id="monthlyBadge">No Data</span>
+      </div>
+      <div class="stat-footer">
+        <span id="monthlyCount">0 / 0 sessions</span>
+        <span id="monthlyMonthLabel">Selected Month</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="margin-banner" id="marginBanner">
+    Mark classes below to calculate your 75% safe margin.
+  </div>
+
+  <div class="nav-views">
+    <button class="view-btn active" data-view="daily">📅 Daily Log</button>
+    <button class="view-btn" data-view="subjects">📊 Subject-Wise</button>
+    <button class="view-btn" data-view="backup">⚙️ Backup</button>
+  </div>
+
+  <div id="view-daily">
+    <div class="date-card">
+      <div class="date-nav">
+        <button class="icon-btn" id="prevDay" title="Previous Day">‹</button>
+        <div class="date-center">
+          <input type="date" id="datePicker" />
+          <div class="day-name" id="dayNameLabel">Monday</div>
+        </div>
+        <button class="icon-btn" id="nextDay" title="Next Day">›</button>
+      </div>
+      <div class="bulk-actions">
+        <button class="bulk-btn present-all" id="markAllPresent">✓ Mark All Present</button>
+        <button class="bulk-btn" id="markAllOff">🚫 Day Off / Holiday</button>
+      </div>
+    </div>
+
+    <div class="class-list" id="classList"></div>
+  </div>
+
+  <div id="view-subjects" class="hidden">
+    <div id="subjectBreakdownList"></div>
+  </div>
+
+  <div id="view-backup" class="hidden">
+    <div class="backup-card">
+      <h3>💾 Backup &amp; Restore Attendance</h3>
+      <p style="font-size: 12.5px; color: var(--muted); margin-bottom: 12px;">
+        Your records save automatically on this device. Export a JSON copy periodically so you never lose your semester log.
+      </p>
+      <div class="backup-actions">
+        <button class="bulk-btn present-all" id="exportBtn">⬇️ Export JSON Backup</button>
+        <button class="bulk-btn" id="importBtn">⬆️ Import JSON Backup</button>
+        <input type="file" id="importFile" accept=".json" class="hidden" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CLINICAL_ROTATION = {
+    A: { Mon: "Prasuti", Tue: "Kaumarbhritya", Wed: "Kayachikitsa", Thu: "Panchakarma", Fri: "Shalya", Sat: "Shalakya" },
+    B: { Mon: "Kaumarbhritya", Tue: "Kayachikitsa", Wed: "Panchakarma", Thu: "Shalya", Fri: "Shalakya", Sat: "Prasuti" },
+    C: { Mon: "Kayachikitsa", Tue: "Panchakarma", Wed: "Shalya", Thu: "Shalakya", Fri: "Prasuti", Sat: "Kaumarbhritya" },
+    D: { Mon: "Panchakarma", Tue: "Shalya", Wed: "Shalakya", Thu: "Prasuti", Fri: "Kaumarbhritya", Sat: "Kayachikitsa" },
+    E: { Mon: "Shalya", Tue: "Shalakya", Wed: "Prasuti", Thu: "Kaumarbhritya", Fri: "Kayachikitsa", Sat: "Panchakarma" },
+    F: { Mon: "Shalakya", Tue: "Prasuti", Wed: "Kaumarbhritya", Thu: "Kayachikitsa", Fri: "Panchakarma", Sat: "Shalya" }
+  };
+
+  const TIMETABLE = {
+    Mon: [
+      { id: "mon_09", time: "09:00–10:00", subject: "Shalya Tantra", faculty: "Dr Deepak Mannangat", type: "theory" },
+      { id: "mon_10", time: "10:00–11:00", subject: "Kayachikitsa", faculty: "Dr Arathy Menon", type: "theory" },
+      { id: "mon_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "mon_14", time: "14:00–15:00", subject: "Samhita Siddhant", faculty: "Dr Mohan Joshi / Dr Haritha", type: "theory" },
+      { id: "mon_15", time: "15:00–16:00", subject: "Shalakya Tantra", faculty: "Dr Praveen / Dr Neethu / Dr Deendayal", type: "theory" },
+      { id: "mon_16", time: "16:00–17:00", subject: "Panchakarma", faculty: "Dr Chintan Bhatt", type: "theory" }
+    ],
+    Tue: [
+      { id: "tue_09", time: "09:00–10:00", subject: "Streerog-Prasuti", faculty: "Dr Lijima C / Dr Swati Gaikwad / Dr Akhila M / Dr Hemant Kumar", type: "theory" },
+      { id: "tue_10", time: "10:00–11:00", subject: "Panchakarma", faculty: "Dr Praveena B.S.", type: "theory" },
+      { id: "tue_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "tue_14", time: "14:00–15:00", subject: "Kayachikitsa", faculty: "Dr VGH / Dr Ashwin", type: "theory" },
+      { id: "tue_15", time: "15:00–16:00", subject: "Shalya Tantra", faculty: "Dr Shailesh Jaiswal", type: "theory" },
+      { id: "tue_16", time: "16:00–17:00", subject: "Kayachikitsa", faculty: "Dr Ashwin / Dr Arathy Menon", type: "theory" }
+    ],
+    Wed: [
+      { id: "wed_09", time: "09:00–10:00", subject: "Kayachikitsa", faculty: "Dr Prashant Sasane", type: "theory" },
+      { id: "wed_10", time: "10:00–11:00", subject: "Shalakya Tantra", faculty: "Dr Praveen / Dr Neethu / Dr Deendayal", type: "theory" },
+      { id: "wed_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "wed_14", time: "14:00–15:00", subject: "Panchakarma", faculty: "Dr Swapnil", type: "theory" },
+      { id: "wed_15", time: "15:00–16:00", subject: "Streerog-Prasuti", faculty: "Dr Lijima C / Dr Swati Gaikwad / Dr Akhila M / Dr Hemant Kumar", type: "theory" },
+      { id: "wed_16", time: "16:00–17:00", subject: "Samhita Siddhant", faculty: "Dr Anita Chaudhary", type: "theory" }
+    ],
+    Thu: [
+      { id: "thu_09", time: "09:00–10:00", subject: "Kaumarbhritya", faculty: "Dr Sumit Goel", type: "theory" },
+      { id: "thu_10", time: "10:00–11:00", subject: "Kayachikitsa", faculty: "Dr Ashwin / Dr Prashanth", type: "theory" },
+      { id: "thu_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "thu_14", time: "14:00–15:00", subject: "Kaumarbhritya", faculty: "Dr Nisha / Dr Rahul / Dr Binisha", type: "theory" },
+      { id: "thu_15", time: "15:00–16:00", subject: "Samhita Siddhant", faculty: "Dr Akhilesh Shukla", type: "theory" },
+      { id: "thu_16", time: "16:00–17:00", subject: "Mentor-Mentee", faculty: "Mentorship Session", type: "other" }
+    ],
+    Fri: [
+      { id: "fri_09", time: "09:00–10:00", subject: "Shalakya Tantra", faculty: "Dr Praveen / Dr Neethu / Dr Deendayal", type: "theory" },
+      { id: "fri_10", time: "10:00–11:00", subject: "Shalya Tantra", faculty: "Dr Rashmi / Dr Sarojini", type: "theory" },
+      { id: "fri_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "fri_14", time: "14:00–15:00", subject: "Streerog-Prasuti", faculty: "Dr Lijima C / Dr Swati Gaikwad / Dr Akhila M / Dr Hemant Kumar", type: "theory" },
+      { id: "fri_15", time: "15:00–16:00", subject: "Kaumarbhritya", faculty: "Dr Rahul Ghuse", type: "theory" },
+      { id: "fri_16", time: "16:00–17:00", subject: "Panchakarma", altSubject: "Shalakya Tantra", faculty: "Dr Snehalata / Dr Praveen / Dr Neethu / Dr Deendayal", type: "theory", isAlt: true }
+    ],
+    Sat: [
+      { id: "sat_09", time: "09:00–10:00", subject: "Samhita Siddhant", faculty: "Dr Haritha / Dr Anita", type: "theory" },
+      { id: "sat_10", time: "10:00–11:00", subject: "Kayachikitsa", faculty: "Dr VGH / Dr Ashwin", type: "theory" },
+      { id: "sat_11", time: "11:00–13:00", subject: "CLINICAL", faculty: "Clinical Batch Posting (2 hrs)", type: "clinical" },
+      { id: "sat_14", time: "14:00–15:00", subject: "Library / Self Learning", faculty: "Visit / Inter. dept. / Sports", type: "other" }
+    ]
+  };
+
+  const DAY_KEYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const DAY_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const STORAGE_KEY = "aiia_bams_3prof_attendance_v1";
+
+  let state = {
+    batch: "A",
+    records: {},
+    altOverrides: {}
+  };
+
+  let currentFilter = "all";
+  let selectedDate = new Date().toISOString().split("T")[0];
+  let selectedMonth = selectedDate.slice(0, 7);
+
+  function loadState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (saved) {
+        state = { ...state, ...saved };
+      }
+    } catch (e) {}
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function normalizeSubjectName(raw) {
+    const map = {
+      "Prasuti": "Streerog-Prasuti",
+      "Shalya": "Shalya Tantra",
+      "Shalakya": "Shalakya Tantra"
+    };
+    return map[raw] || raw;
+  }
+
+  function getSlotsForDate(dateStr) {
+    const d = new Date(dateStr + "T00:00:00");
+    const dayKey = DAY_KEYS[d.getDay()];
+    if (dayKey === "Sun") return [];
+    const baseSlots = TIMETABLE[dayKey] || [];
+    return baseSlots.map(slot => {
+      let subj = slot.subject;
+      if (subj === "CLINICAL") {
+        const rawDept = CLINICAL_ROTATION[state.batch][dayKey];
+        subj = normalizeSubjectName(rawDept) + " (Clinical)";
+      } else if (slot.isAlt && state.altOverrides[dateStr]) {
+        subj = state.altOverrides[dateStr];
+      }
+      return { ...slot, resolvedSubject: subj };
+    });
+  }
+
+  function updateMonthDropdown() {
+    const monthSet = new Set([selectedDate.slice(0, 7)]);
+    Object.keys(state.records).forEach(d => monthSet.add(d.slice(0, 7)));
+    const sorted = Array.from(monthSet).sort().reverse();
+    const sel = document.getElementById("monthFilter");
+    sel.innerHTML = sorted.map(m => {
+      const [y, mo] = m.split("-");
+      const label = new Date(y, parseInt(mo, 10) - 1, 1).toLocaleString("en-US", { month: "short", year: "numeric" });
+      return `<option value="${m}" ${m === selectedMonth ? "selected" : ""}>${label}</option>`;
+    }).join("");
+  }
+
+  function calculateStats() {
+    let overallP = 0, overallT = 0;
+    let monthP = 0, monthT = 0;
+    const subjectMap = {};
+
+    for (const [dateStr, dayRecs] of Object.entries(state.records)) {
+      const slots = getSlotsForDate(dateStr);
+      for (const slot of slots) {
+        const status = dayRecs[slot.id];
+        if (!status || status === "off") continue;
+        if (currentFilter === "theory" && slot.type !== "theory") continue;
+        if (currentFilter === "clinical" && slot.type !== "clinical") continue;
+
+        const isPresent = status === "present";
+        overallT++;
+        if (isPresent) overallP++;
+
+        if (dateStr.startsWith(selectedMonth)) {
+          monthT++;
+          if (isPresent) monthP++;
+        }
+
+        const subKey = slot.resolvedSubject;
+        if (!subjectMap[subKey]) subjectMap[subKey] = { p: 0, t: 0, type: slot.type };
+        subjectMap[subKey].t++;
+        if (isPresent) subjectMap[subKey].p++;
+      }
+    }
+
+    const ovPct = overallT ? (overallP / overallT) * 100 : 0;
+    document.getElementById("overallPct").textContent = ovPct.toFixed(1) + "%";
+    document.getElementById("overallCount").textContent = `${overallP} / ${overallT} sessions attended`;
+    const ovBadge = document.getElementById("overallBadge");
+    if (!overallT) {
+      ovBadge.textContent = "No Data";
+      ovBadge.className = "status-badge badge-good";
+    } else if (ovPct >= 75) {
+      ovBadge.textContent = "Eligible";
+      ovBadge.className = "status-badge badge-good";
+    } else if (ovPct >= 65) {
+      ovBadge.textContent = "Shortage Risk";
+      ovBadge.className = "status-badge badge-warn";
+    } else {
+      ovBadge.textContent = "Detained Risk";
+      ovBadge.className = "status-badge badge-bad";
+    }
+
+    const moPct = monthT ? (monthP / monthT) * 100 : 0;
+    document.getElementById("monthlyPct").textContent = moPct.toFixed(1) + "%";
+    document.getElementById("monthlyCount").textContent = `${monthP} / ${monthT} sessions`;
+    const moBadge = document.getElementById("monthlyBadge");
+    if (!monthT) {
+      moBadge.textContent = "No Data";
+      moBadge.className = "status-badge badge-good";
+    } else if (moPct >= 75) {
+      moBadge.textContent = "On Track";
+      moBadge.className = "status-badge badge-good";
+    } else {
+      moBadge.textContent = "Below 75%";
+      moBadge.className = "status-badge badge-bad";
+    }
+
+    const banner = document.getElementById("marginBanner");
+    if (!overallT) {
+      banner.className = "margin-banner";
+      banner.textContent = "Mark classes below to calculate your 75% safe margin.";
+    } else if (ovPct >= 75) {
+      const canMiss = Math.floor((overallP - 0.75 * overallT) / 0.75);
+      banner.className = "margin-banner";
+      banner.textContent = canMiss > 0
+        ? `✅ Safe Zone: You can miss up to ${canMiss} upcoming class${canMiss > 1 ? "es" : ""} and stay ≥ 75%.`
+        : `⚠️ Borderline: Attend the next class to build a safe margin above 75%.`;
+    } else {
+      const mustAttend = Math.ceil((0.75 * overallT - overallP) / 0.25);
+      banner.className = "margin-banner danger";
+      banner.textContent = `🚨 Action Needed: Attend the next ${mustAttend} class${mustAttend > 1 ? "es" : ""} in a row to reach 75%.`;
+    }
+
+    const subContainer = document.getElementById("subjectBreakdownList");
+    const entries = Object.entries(subjectMap).sort((a, b) => a[0].localeCompare(b[0]));
+    if (!entries.length) {
+      subContainer.innerHTML = `<div class="sunday-box">No attendance marked yet for this filter.</div>`;
+    } else {
+      subContainer.innerHTML = entries.map(([name, data]) => {
+        const pct = (data.p / data.t) * 100;
+        const color = pct >= 75 ? "#059669" : pct >= 65 ? "#d97706" : "#dc2626";
+        return `
+          <div class="subject-card">
+            <div class="sub-row-top">
+              <span class="sub-name">${name}</span>
+              <span class="sub-pct" style="color:${color}">${pct.toFixed(1)}%</span>
+            </div>
+            <div class="progress-bg">
+              <div class="progress-fill" style="width:${pct}%; background:${color}"></div>
+            </div>
+            <div class="sub-meta">
+              <span>${data.p} attended of ${data.t} classes</span>
+              <span>${pct >= 75 ? "Eligible" : "Shortage"}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+  }
+
+  function renderDaily() {
+    document.getElementById("datePicker").value = selectedDate;
+    const d = new Date(selectedDate + "T00:00:00");
+    document.getElementById("dayNameLabel").textContent = DAY_FULL[d.getDay()];
+
+    const list = document.getElementById("classList");
+    const slots = getSlotsForDate(selectedDate);
+    if (!slots.length) {
+      list.innerHTML = `<div class="sunday-box">🌴 Sunday — No scheduled lectures or clinical postings.</div>`;
+      return;
+    }
+
+    const dayRecs = state.records[selectedDate] || {};
+    list.innerHTML = slots.map(slot => {
+      const st = dayRecs[slot.id] || "";
+      const typeClass = slot.type === "clinical" ? "type-clinical" : slot.type === "theory" ? "type-theory" : "type-other";
+      const altBtn = slot.isAlt
+        ? `<button class="alt-toggle" onclick="toggleAltWeek('${selectedDate}')">🔄 Alt Week: ${slot.resolvedSubject} (Tap to switch)</button>`
+        : "";
+
+      return `
+        <div class="class-item">
+          <div class="class-top">
+            <span class="time-chip">⏰ ${slot.time}</span>
+            <span class="type-chip ${typeClass}">${slot.type}</span>
+          </div>
+          <div class="subject-title">${slot.resolvedSubject}</div>
+          <div class="faculty-name">${slot.faculty}</div>
+          ${altBtn}
+          <div class="status-buttons">
+            <button class="status-btn ${st === 'present' ? 'active-present' : ''}" onclick="setStatus('${slot.id}', 'present')">✓ Present</button>
+            <button class="status-btn ${st === 'absent' ? 'active-absent' : ''}" onclick="setStatus('${slot.id}', 'absent')">✕ Absent</button>
+            <button class="status-btn ${st === 'off' ? 'active-off' : ''}" onclick="setStatus('${slot.id}', 'off')">— Off</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  window.setStatus = function(slotId, status) {
+    if (!state.records[selectedDate]) state.records[selectedDate] = {};
+    if (state.records[selectedDate][slotId] === status) {
+      delete state.records[selectedDate][slotId];
+    } else {
+      state.records[selectedDate][slotId] = status;
+    }
+    saveState();
+    updateMonthDropdown();
+    renderDaily();
+    calculateStats();
+  };
+
+  window.toggleAltWeek = function(dateStr) {
+    const curr = state.altOverrides[dateStr] || "Panchakarma";
+    state.altOverrides[dateStr] = curr === "Panchakarma" ? "Shalakya Tantra" : "Panchakarma";
+    saveState();
+    renderDaily();
+    calculateStats();
+  };
+
+  function shiftDate(days) {
+    const d = new Date(selectedDate + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    selectedDate = d.toISOString().split("T")[0];
+    selectedMonth = selectedDate.slice(0, 7);
+    updateMonthDropdown();
+    renderDaily();
+    calculateStats();
+  }
+
+  document.getElementById("batchSelect").addEventListener("change", (e) => {
+    state.batch = e.target.value;
+    saveState();
+    renderDaily();
+    calculateStats();
+  });
+
+  document.getElementById("datePicker").addEventListener("change", (e) => {
+    if (e.target.value) {
+      selectedDate = e.target.value;
+      selectedMonth = selectedDate.slice(0, 7);
+      updateMonthDropdown();
+      renderDaily();
+      calculateStats();
+    }
+  });
+
+  document.getElementById("prevDay").addEventListener("click", () => shiftDate(-1));
+  document.getElementById("nextDay").addEventListener("click", () => shiftDate(1));
+
+  document.getElementById("markAllPresent").addEventListener("click", () => {
+    const slots = getSlotsForDate(selectedDate);
+    if (!slots.length) return;
+    if (!state.records[selectedDate]) state.records[selectedDate] = {};
+    slots.forEach(s => state.records[selectedDate][s.id] = "present");
+    saveState();
+    updateMonthDropdown();
+    renderDaily();
+    calculateStats();
+  });
+
+  document.getElementById("markAllOff").addEventListener("click", () => {
+    const slots = getSlotsForDate(selectedDate);
+    if (!slots.length) return;
+    if (!state.records[selectedDate]) state.records[selectedDate] = {};
+    slots.forEach(s => state.records[selectedDate][s.id] = "off");
+    saveState();
+    updateMonthDropdown();
+    renderDaily();
+    calculateStats();
+  });
+
+  document.getElementById("monthFilter").addEventListener("change", (e) => {
+    selectedMonth = e.target.value;
+    calculateStats();
+  });
+
+  document.querySelectorAll(".filter-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter;
+      calculateStats();
+    });
+  });
+
+  document.querySelectorAll(".view-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.dataset.view;
+      ["daily", "subjects", "backup"].forEach(v => {
+        document.getElementById("view-" + v).classList.toggle("hidden", v !== target);
+      });
+    });
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `aiia_bams_attendance_${selectedDate}.json`;
+    a.click();
+  });
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    document.getElementById("importFile").click();
+  });
+
+  document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (imported && imported.records) {
+          state = imported;
+          document.getElementById("batchSelect").value = state.batch || "A";
+          saveState();
+          updateMonthDropdown();
+          renderDaily();
+          calculateStats();
+          alert("Attendance backup restored successfully!");
+        }
+      } catch (err) {
+        alert("Invalid backup file.");
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  if ("serviceWorker" in navigator) {
+    const swCode = `
+      const CACHE_NAME = 'bams-tracker-v1';
+      self.addEventListener('install', (event) => {
+        self.skipWaiting();
+        event.waitUntil(
+          caches.open(CACHE_NAME).then((cache) => cache.addAll(['./']))
+        );
+      });
+      self.addEventListener('activate', (event) => {
+        event.waitUntil(self.clients.claim());
+      });
+      self.addEventListener('fetch', (event) => {
+        event.respondWith(
+          fetch(event.request).catch(() => caches.match(event.request))
+        );
+      });
+    `;
+    const swBlob = new Blob([swCode], { type: "application/javascript" });
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  }
+
+  loadState();
+  document.getElementById("batchSelect").value = state.batch;
+  updateMonthDropdown();
+  renderDaily();
+  calculateStats();
+</script>
+</body>
+</html>
